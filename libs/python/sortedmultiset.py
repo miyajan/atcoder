@@ -1,12 +1,12 @@
 # Thanks to https://github.com/tatyam-prime/SortedSet.
 import math
-from bisect import bisect_right, bisect_left
+from bisect import bisect_right, bisect_left, insort
 from typing import Generic, Iterator, List, TypeVar, Union
 
 T = TypeVar('T')
 
 
-class SortedSet(Generic[T]):
+class SortedMultiSet(Generic[T]):
     BUCKET_RATIO = 50
     REBUILD_RATIO = 170
 
@@ -37,7 +37,7 @@ class SortedSet(Generic[T]):
         return self._size
 
     def __repr__(self) -> str:
-        return "SortedSet" + str(self._buckets)
+        return "SortedMultiSet" + str(self._buckets)
 
     def __str__(self) -> str:
         return str(list(self))
@@ -68,21 +68,17 @@ class SortedSet(Generic[T]):
         i = bisect_left(bucket, x)
         return i != len(bucket) and bucket[i] == x
 
-    def add(self, x: T) -> bool:
-        """Adds an element. Returns False if x already exists."""
+    def add(self, x: T) -> None:
+        """Adds an element."""
         if self._size == 0:
             self._buckets = [[x]]
             self._size = 1
-            return True
+            return
         bucket = self._find_bucket(x)
-        i = bisect_left(bucket, x)
-        if i != len(bucket) and bucket[i] == x:
-            return False
-        bucket.insert(i, x)
+        insort(bucket, x)
         self._size += 1
         if len(bucket) > len(self._buckets) * self.REBUILD_RATIO:
             self._rebuild()
-        return True
 
     def remove(self, x: T) -> bool:
         """Removes an element. Returns False if it doesn't exist."""
@@ -123,6 +119,10 @@ class SortedSet(Generic[T]):
         for bucket in self._buckets:
             if bucket[-1] >= x:
                 return bucket[bisect_left(bucket, x)]
+
+    def count(self, x: T) -> int:
+        """Count the number of elements = x."""
+        return self.count_less_than_or_equal_to(x) - self.count_less_than(x)
 
     def count_less_than(self, x: T) -> int:
         """Count the number of elements < x."""

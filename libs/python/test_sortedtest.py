@@ -1,6 +1,6 @@
 import unittest
 
-from libs.python.sortedset import SortedSet
+from sortedset import SortedSet
 
 
 class SortedSetTests(unittest.TestCase):
