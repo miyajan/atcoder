@@ -3,6 +3,8 @@ project(atcoder)
 
 set(CMAKE_CXX_STANDARD 17)
 
+include_directories(.)
+
 add_executable(template template.cpp)
 add_executable(APG4b_1-00 APG4b/1-00.cpp)
 add_executable(APG4b_ex1 APG4b/ex1.cpp)
