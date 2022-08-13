@@ -28,26 +28,37 @@ int main() {
 
     vector<long long> min_cost_from_1(N + 1, numeric_limits<long long>::max());
     min_cost_from_1.at(1) = 0;
-    deque<int> currents = {1};
-    while (!currents.empty()) {
-        int current = currents.at(0);
-        currents.pop_front();
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<>> queue;
+    queue.push({0, 1});
+    while (!queue.empty()) {
+        auto top = queue.top();
+        long long cost = top.first;
+        int current = top.second;
+        queue.pop();
+        if (cost > min_cost_from_1.at(current)) {
+            continue;
+        }
         for (auto next: connected.at(current)) {
             long long possible_cost = min_cost_from_1.at(current) + costs.at(current).at(next);
             if (possible_cost < min_cost_from_1.at(next)) {
                 min_cost_from_1.at(next) = possible_cost;
                 // cout << "min_cost_from_1.at(" << next << "): " << min_cost_from_1.at(next) << endl;
-                currents.push_back(next);
+                queue.push({possible_cost, next});
             }
         }
     }
 
     vector<long long> min_cost_from_n(N + 1, numeric_limits<long long>::max());
     min_cost_from_n.at(N) = 0;
-    currents = {N};
-    while (!currents.empty()) {
-        int current = currents.at(0);
-        currents.pop_front();
+    queue.push({0, N});
+    while (!queue.empty()) {
+        auto top = queue.top();
+        long long cost = top.first;
+        int current = top.second;
+        queue.pop();
+        if (cost > min_cost_from_n.at(current)) {
+            continue;
+        }
         for (auto next: connected.at(current)) {
             // cout << "current: " << current << ", next: " << next << endl;
             long long possible_cost = min_cost_from_n.at(current) + costs.at(current).at(next);
@@ -56,7 +67,7 @@ int main() {
             if (possible_cost < min_cost_from_n.at(next)) {
                 min_cost_from_n.at(next) = possible_cost;
                 // cout << "min_cost_from_n.at(" << next << "): " << min_cost_from_n.at(next) << endl;
-                currents.push_back(next);
+                queue.push({possible_cost, next});
             }
         }
     }
